@@ -1,4 +1,5 @@
 import { Editor } from "./editor";
+import {Toolbar} from "./toolbar";
 
 interface DocumentIdPageProps {
     params: Promise<{ documentId: string }>;
@@ -9,8 +10,8 @@ const DocumentIdPage = async ({ params }: DocumentIdPageProps) => {
 
   return (
     <div>
-      <h1>Document ID:</h1>
-      <p>{documentId}</p>
+      <h1>Document ID: {documentId}</h1>
+      <Toolbar />
       <Editor />
     </div>
   );
