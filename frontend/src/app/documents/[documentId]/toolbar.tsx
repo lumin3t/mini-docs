@@ -9,7 +9,7 @@ import {
   Undo2,
   Redo2,
   /*MessageSquarePlus,*/
-  SpellCheck,
+  /*SpellCheck,*/
   Printer,
   List,
   ListOrdered,
@@ -18,6 +18,10 @@ import {
   Heading2,
   Heading3,
   Palette,
+  AlignLeftIcon,
+  AlignCenterIcon,
+  AlignRightIcon,
+  AlignJustifyIcon,
   /*Highlighter,*/
   /*Link2,*/
 } from "lucide-react"
@@ -33,7 +37,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 
 //////////////////////////////////////////
-// FONT FAMILY (unchanged)
+// FONT FAMILY 
 //////////////////////////////////////////
 
 const FrontFamilyButton = () => {
@@ -103,7 +107,7 @@ const FrontFamilyButton = () => {
 }
 
 //////////////////////////////////////////
-// FONT SIZE // currently not working ADD CUSTOM EXTENSION
+// FONT SIZE 
 //////////////////////////////////////////
 
 const FontSizeButton = () => {
@@ -111,11 +115,13 @@ const FontSizeButton = () => {
 
   const sizes = ["12px", "14px", "16px", "18px", "24px"]
 
+  const currentSize = editor?.getAttributes("textStyle")?.fontSize || "16px"
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button className="px-2 h-7 rounded-sm hover:bg-neutral-200/80 text-sm">
-          16 ▾
+        <button className="px-2 h-7 rounded-sm hover:bg-neutral-200/80 text-sm min-w-[60px]">
+          {currentSize.replace("px", "")} ▾
         </button>
       </DropdownMenuTrigger>
 
@@ -123,13 +129,7 @@ const FontSizeButton = () => {
         {sizes.map((size) => (
           <DropdownMenuItem
             key={size}
-            onClick={() =>
-              editor
-                ?.chain()
-                .focus()
-                .setMark("textStyle", { fontSize: size })
-                .run()
-            }
+            onClick={() => editor?.commands.setFontSize(size)}
           >
             {size}
           </DropdownMenuItem>
@@ -138,7 +138,6 @@ const FontSizeButton = () => {
     </DropdownMenu>
   )
 }
-
 //////////////////////////////////////////
 // HEADING BUTTONS
 //////////////////////////////////////////
@@ -224,7 +223,58 @@ const ColorButtons = () => {
     </div>
   )
 }
+//////////////////////////////////////////
+// ALIGN ITEMS
+//////////////////////////////////////////
 
+const AlignButton = () => {
+  const { editor } = useEditorStore()
+
+  const alignments = [
+    {
+      value: "left",
+      icon: AlignLeftIcon,
+    },
+    {
+      value: "center",
+      icon: AlignCenterIcon,
+    },
+    {
+      value: "right",
+      icon: AlignRightIcon,
+    },
+    {
+      value: "justify",
+      icon: AlignJustifyIcon,
+    },
+  ]
+
+  const currentAlign =
+    editor?.getAttributes("paragraph")?.textAlign || "left"
+
+  return (
+    <div className="flex items-center gap-x-0.5">
+      {alignments.map((align) => (
+        <button
+          key={align.value}
+          onClick={() =>
+            editor
+              ?.chain()
+              .focus()
+              .setTextAlign(align.value)
+              .run()
+          }
+          className={cn(
+            "h-7 w-7 flex items-center justify-center rounded-sm hover:bg-neutral-200/80",
+            currentAlign === align.value && "bg-neutral-200/80"
+          )}
+        >
+          <align.icon className="size-4" />
+        </button>
+      ))}
+    </div>
+  )
+}
 //////////////////////////////////////////
 // BASE BUTTON
 //////////////////////////////////////////
@@ -286,7 +336,7 @@ export const Toolbar = () => {
         onClick: () => editor?.chain().focus().redo().run(),
         disabled: !editor?.can().redo(),
       },
-      {
+      /*{
         label: "Spellcheck",
         icon: SpellCheck,
         onClick: () => {
@@ -294,7 +344,7 @@ export const Toolbar = () => {
           const current = el?.getAttribute("spellcheck") === "true"
           el?.setAttribute("spellcheck", (!current).toString())
         },
-      },
+      },*/
       {
         label: "Print",
         icon: Printer,
@@ -371,13 +421,15 @@ export const Toolbar = () => {
         </div>
       ))}
 
+
+      <Separator orientation="vertical" className="h-6 bg-neutral-300" />
+      <AlignButton />
+
       <Separator orientation="vertical" className="h-6 bg-neutral-300" />
       <FrontFamilyButton />
 
       <Separator orientation="vertical" className="h-6 bg-neutral-300" />
       <FontSizeButton />
-
-      <Separator orientation="vertical" className="h-6 bg-neutral-300" />
       <HeadingButtons />
 
       <Separator orientation="vertical" className="h-6 bg-neutral-300" />

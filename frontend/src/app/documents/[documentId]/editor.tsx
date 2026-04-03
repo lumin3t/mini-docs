@@ -10,19 +10,23 @@ import TableRow from "@tiptap/extension-table-row"
 import TableHeader from "@tiptap/extension-table-header"
 import TableCell from "@tiptap/extension-table-cell"
 import Image from "@tiptap/extension-image"
-import ImageResize from "tiptap-extension-resize-image"
+/*import ImageResize from "tiptap-extension-resize-image"*/
+// That extension not working
 import Underline from "@tiptap/extension-underline"
 import FontFamily from "@tiptap/extension-font-family"
 import TextStyle from "@tiptap/extension-text-style"
 import Highlight from "@tiptap/extension-highlight"
 import Link from "@tiptap/extension-link"
 import Color from "@tiptap/extension-color"
+import { FontSizeExtension } from "@/extensions/font-size"
+import TextAlign from "@tiptap/extension-text-align"
 
 import { useEditorStore } from "@/store/use-editor-store"
 
 export const Editor = () => {
   const { setEditor } = useEditorStore();
   const editor = useEditor({
+    immediatelyRender: false,
     onCreate: ({ editor }) => {
       setEditor(editor);
     },
@@ -66,7 +70,7 @@ export const Editor = () => {
       TableHeader,
       TableCell,
       Image,
-      ImageResize,//Error.. not working pls work on it 
+      /*ImageResize,*/ 
       Underline,
       FontFamily,
       TextStyle,
@@ -75,6 +79,10 @@ export const Editor = () => {
         multicolor: true,
       }),
       Link,
+      FontSizeExtension,
+      TextAlign.configure({
+        types: ["heading", "paragraph"],
+      }),
     ],
     content: `<table><tr><th>Header 1</th><th>Header 2</th></tr><tr><td>Cell 1</td><td>Cell 2</td></tr></table>`,
   })
