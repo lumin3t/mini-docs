@@ -39,3 +39,5 @@ This is a real-time editor built for a **Hackathon**. It works like Google Docs,
     ``` bash
     npm run dev
     ```
+
+    (AI Tools like ChatGPT and Gemini used for automation)
