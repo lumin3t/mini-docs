@@ -1,5 +1,4 @@
-// editor.tsx - tiptap editor
-"use client" // This is so the component can use hooks
+"use client"
 
 import { useEditor, EditorContent } from "@tiptap/react"
 import StarterKit from "@tiptap/starter-kit"
@@ -10,8 +9,6 @@ import TableRow from "@tiptap/extension-table-row"
 import TableHeader from "@tiptap/extension-table-header"
 import TableCell from "@tiptap/extension-table-cell"
 import Image from "@tiptap/extension-image"
-/*import ImageResize from "tiptap-extension-resize-image"*/
-// That extension not working
 import Underline from "@tiptap/extension-underline"
 import FontFamily from "@tiptap/extension-font-family"
 import TextStyle from "@tiptap/extension-text-style"
@@ -21,10 +18,23 @@ import Color from "@tiptap/extension-color"
 import { FontSizeExtension } from "@/extensions/font-size"
 import TextAlign from "@tiptap/extension-text-align"
 
+// COLLABORATION IMPORTS
+import { useLiveblocksExtension } from "@liveblocks/react-tiptap"
+import { useSession } from "next-auth/react"
 import { useEditorStore } from "@/store/use-editor-store"
 
 export const Editor = () => {
   const { setEditor } = useEditorStore();
+  const { data: session } = useSession();
+  
+  // This hook provides the bridge to Liveblocks
+  const liveblocks = useLiveblocksExtension({
+  cursor: {
+    name: session?.user?.name || "Anonymous",
+    color: "#3b82f6",
+    avatar: session?.user?.image || "",
+  },
+});
   const editor = useEditor({
     immediatelyRender: false,
     onCreate: ({ editor }) => {
@@ -58,7 +68,10 @@ export const Editor = () => {
       }
     },
     extensions: [
-      StarterKit,
+      liveblocks, 
+      StarterKit.configure({
+        history: false, 
+      }),
       TaskList,
       TaskItem.configure({
         nested: true,
@@ -70,7 +83,6 @@ export const Editor = () => {
       TableHeader,
       TableCell,
       Image,
-      /*ImageResize,*/ 
       Underline,
       FontFamily,
       TextStyle,
@@ -84,11 +96,10 @@ export const Editor = () => {
         types: ["heading", "paragraph"],
       }),
     ],
-    content: `<table><tr><th>Header 1</th><th>Header 2</th></tr><tr><td>Cell 1</td><td>Cell 2</td></tr></table>`,
   })
 
   return (
-    <div className="size-full overflow-x-auto bg-slate-50 px-4 print:p-0 print:bg-white print:overflow-visible">
+    <div className="size-full overflow-x-auto bg-[#F9FBFD] px-4 print:p-0 print:bg-white print:overflow-visible">
       <div className="min-w-max flex justify-center w-[816px] py-4 print:py-0 mx-auto print:w-full print:min-w-0">
         <EditorContent editor={editor} />
       </div>
